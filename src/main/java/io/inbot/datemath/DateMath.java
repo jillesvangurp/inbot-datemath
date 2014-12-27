@@ -174,23 +174,23 @@ public class DateMath {
                             break;
                         case "m":
                             if (minus) {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).minusMonths(amount);
+                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minusMonths(amount);
                             } else {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).plusMonths(amount);
+                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plusMonths(amount);
                             }
                         case "y":
                             if (minus) {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).minusYears(amount);
+                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minusYears(amount);
                             } else {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).plusYears(amount);
+                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plusYears(amount);
                             }
                         default:
                             throw new IllegalArgumentException("illegal time unit. Should be [s|h|d|w|m|y]: " + text);
                         }
                         if (minus) {
-                            return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).minus(amount, chronoUnit);
+                            return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minus(amount, chronoUnit);
                         } else {
-                            return LocalDateTime.ofInstant(offset, ZoneId.of("Z")).plus(amount, chronoUnit);
+                            return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plus(amount, chronoUnit);
                         }
                     } else {
                         throw new IllegalArgumentException("illegal duration. Should match ([0-9]+)([s|h|d|w|m|y]): " + right);
