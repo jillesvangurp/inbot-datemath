@@ -37,8 +37,10 @@ public class DateMathTest {
         return new Object[][] {
                 {"tomorrow",now.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
                 {"yesterday",now.truncatedTo(ChronoUnit.DAYS).minus(1, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
-                {"day_before_yesterday",now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
+                {"Day_Before_Yesterday",now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
                 {"day_after_tomorrow",now.truncatedTo(ChronoUnit.DAYS).plus(2, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
+                {"day before yesterday",now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
+                {"day after tomorrow",now.truncatedTo(ChronoUnit.DAYS).plus(2, ChronoUnit.DAYS).toInstant(ZoneOffset.UTC)},
                 {"-10s",Instant.now().minus(10, ChronoUnit.SECONDS)},
                 {"1d",Instant.now().plus(1, ChronoUnit.DAYS)},
                 {"-1d",Instant.now().minus(1, ChronoUnit.DAYS)},
@@ -48,7 +50,7 @@ public class DateMathTest {
                 {"  -  100  y  ",now.minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"100y",now.plusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday+100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
-                {"yesterday-100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)},
+                {"yesterday - 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday + 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday\t-\t100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)}
         };
@@ -60,7 +62,16 @@ public class DateMathTest {
         assertThat(differenceInMillis(DateMath.parse(text), expected)).isLessThan(100);
     }
 
+    public void shouldHandleTimeZoneCorrectly() {
+        Instant ts = DateMath.parse("16:30","EST");
+        assertThat(ts.toString()).contains("21:30");
+    }
+
     private long differenceInMillis(Instant one, Instant two) {
         return Math.abs(one.toEpochMilli()-two.toEpochMilli());
+    }
+
+    public void shouldHandleWeekDays() {
+
     }
 }

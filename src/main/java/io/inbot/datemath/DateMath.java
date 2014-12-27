@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -46,164 +47,168 @@ public class DateMath {
         return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch));
     }
 
-    private static Instant flexibleInstantParse(String text) throws DateTimeParseException {
+    private static Instant flexibleInstantParse(String text, ZoneId zoneId) throws DateTimeParseException {
         try {
             return Instant.parse(text);
         } catch (DateTimeParseException e) {
-            // fallback to LocalDate and then pretend is at midnight
-            LocalDate parsed = LocalDate.parse(text);
-            return Instant.parse(parsed + "T00:00:00Z");
+
+            if(zoneId == null) {
+                zoneId=ZoneId.of("Z");
+            }
+            try {
+                // try LocalDate
+                LocalDate localDate = LocalDate.parse(text);
+                LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+                return localDateTime.toInstant(ZoneOffset.of(zoneId.getId()));
+            } catch (DateTimeParseException e1) {
+                // try LocalTime
+                LocalTime localTime = LocalTime.parse(text);
+                LocalDate today = LocalDate.now(zoneId);
+                LocalDateTime localDateTime = LocalDateTime.of(today, localTime);
+                return localDateTime.toInstant(ZoneOffset.of(zoneId.getId()));
+            }
         }
     }
 
+    /**
+     * @param text
+     * @return Instant; any relative expressions are interpreted to be in the UTC timezone.
+     */
     public static Instant parse(String text) {
+        return parse(text, ZoneOffset.UTC);
+    }
+
+    public static Instant parse(String text, String zoneId) {
+        ZoneId zone = ZoneId.of(zoneId, ZoneId.SHORT_IDS);
+        return parse(text, zone);
+    }
+
+    private static Instant parse(String text, ZoneId zone) {
         if (text == null) {
             throw new IllegalArgumentException("cannot parse empty string");
         }
         text = text.trim();
+
         try {
-            return flexibleInstantParse(text);
+            return flexibleInstantParse(text, zone);
         } catch (DateTimeParseException e) {
-            return toInstant(parseRelativeTime(text, null));
+            return toInstant(parseRelativeTime(text, zone));
         }
     }
 
-    private static LocalDateTime parseRelativeTime(String text, String zoneId) {
+    private static LocalDateTime parseRelativeTime(String text, ZoneId zoneId) {
         if(zoneId == null) {
-            zoneId="Z";
+            zoneId=ZoneOffset.UTC;
         }
-        LocalDateTime now=LocalDateTime.ofInstant(Instant.now(), ZoneId.of(zoneId));
-        switch (text) {
+        LocalDateTime now=LocalDateTime.ofInstant(Instant.now(), zoneId);
+        switch (text.replace('_', ' ').toLowerCase()) {
+        case "midnight":
+            return parseRelativeTime("00:00", zoneId);
+        case "noon":
+            return parseRelativeTime("12:00", zoneId);
         case "now":
             return now;
-        case "beginning_month":
+        case "beginning month":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.firstDayOfMonth());
-        case "end_month":
+        case "end month":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.firstDayOfNextMonth());
-        case "beginning_year":
+        case "beginning year":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.firstDayOfYear());
-        case "end_year":
+        case "end year":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.firstDayOfNextYear());
-        case "beginning_week":
+        case "beginning week":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
-        case "end_week":
+        case "end week":
             return now.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
         case "tomorrow":
             return now.truncatedTo(ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
-        case "day_after_tomorrow":
+        case "day after tomorrow":
             return now.truncatedTo(ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plus(2, ChronoUnit.DAYS);
         case "yesterday":
             return now.truncatedTo(ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minus(1, ChronoUnit.DAYS);
-        case "day_before_yesterday":
+        case "day before yesterday":
             return now.truncatedTo(ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS);
-        case "next_month":
+        case "next month":
             return parseRelativeTime("1m", zoneId);
-        case "last_month":
+        case "last month":
             return parseRelativeTime("-1m",zoneId);
-        case "next_year":
+        case "next year":
             return parseRelativeTime("1y",zoneId);
-        case "last_year":
+        case "last year":
             return parseRelativeTime("-1y",zoneId);
         default:
-            Matcher matcher = DURATION_PATTERN.matcher(text);
-            if (matcher.matches()) {
+            Matcher durationMatcher = DURATION_PATTERN.matcher(text);
+            if (durationMatcher.matches()) {
+                // relative to now
                 boolean minus = text.startsWith("-");
-                int amount = Integer.valueOf(matcher.group(1));
-                String unit = matcher.group(2);
-                ChronoUnit chronoUnit;
-                switch (unit) {
-                case "s":
-                    chronoUnit = ChronoUnit.SECONDS;
-                    break;
-                case "h":
-                    chronoUnit = ChronoUnit.HOURS;
-                    break;
-                case "d":
-                    chronoUnit = ChronoUnit.DAYS;
-                    break;
-                case "w":
-                    chronoUnit = ChronoUnit.DAYS;
-                    amount = amount * 7;
-                    break;
-                case "m":
-                    if (minus) {
-                        return now.minusMonths(amount);
-                    } else {
-                        return now.plusMonths(amount);
-                    }
-                case "y":
-                    if (minus) {
-                        return now.minusYears(amount);
-                    } else {
-                        return now.plusYears(amount);
-                    }
-                default:
-                    throw new IllegalArgumentException("illegal time unit. Should be [s|h|d|w|m|y]: " + text);
-                }
-                if (minus) {
-                    return now.minus(amount, chronoUnit);
-                } else {
-                    return now.plus(amount, chronoUnit);
-                }
+                int amount = Integer.valueOf(durationMatcher.group(1));
+                String unit = durationMatcher.group(2);
+                return adjust(now, minus, amount, unit);
             } else {
-                matcher = SUM_PATTERN.matcher(text);
-                if(matcher.matches()) {
-                    String left = matcher.group(1);
-                    String operator = matcher.group(2);
-                    String right = matcher.group(3);
+
+                Matcher sumMatcher = SUM_PATTERN.matcher(text);
+                if(sumMatcher.matches()) {
+                    String left = sumMatcher.group(1);
+                    String operator = sumMatcher.group(2);
+                    String right = sumMatcher.group(3);
                     Instant offset = parse(left);
                     boolean minus = operator.equals("-");
-                    Matcher dm = DURATION_PATTERN.matcher(right);
-                    if(dm.matches()) {
-                        int amount = Integer.valueOf(dm.group(1));
-                        String unit = dm.group(2);
-                        ChronoUnit chronoUnit;
-                        switch (unit) {
-                        case "s":
-                            chronoUnit = ChronoUnit.SECONDS;
-                            break;
-                        case "h":
-                            chronoUnit = ChronoUnit.HOURS;
-                            break;
-                        case "d":
-                            chronoUnit = ChronoUnit.DAYS;
-                            break;
-                        case "w":
-                            chronoUnit = ChronoUnit.DAYS;
-                            amount = amount * 7;
-                            break;
-                        case "m":
-                            if (minus) {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minusMonths(amount);
-                            } else {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plusMonths(amount);
-                            }
-                        case "y":
-                            if (minus) {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minusYears(amount);
-                            } else {
-                                return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plusYears(amount);
-                            }
-                        default:
-                            throw new IllegalArgumentException("illegal time unit. Should be [s|h|d|w|m|y]: " + text);
-                        }
-                        if (minus) {
-                            return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).minus(amount, chronoUnit);
-                        } else {
-                            return LocalDateTime.ofInstant(offset, ZoneId.of(zoneId)).plus(amount, chronoUnit);
-                        }
+                    Matcher rightHandSideMatcher = DURATION_PATTERN.matcher(right);
+                    if(rightHandSideMatcher.matches()) {
+                        int amount = Integer.valueOf(rightHandSideMatcher.group(1));
+                        String unit = rightHandSideMatcher.group(2);
+
+                        return adjust( LocalDateTime.ofInstant(offset, zoneId), minus, amount, unit);
                     } else {
                         throw new IllegalArgumentException("illegal duration. Should match ([0-9]+)([s|h|d|w|m|y]): " + right);
                     }
                 }
             }
         }
-        throw new IllegalArgumentException("illegal timestamp " + text);
+        throw new IllegalArgumentException("illegal time expression " + text);
 
     }
 
+    private static LocalDateTime adjust(LocalDateTime now, boolean minus, int amount, String unit) {
+        ChronoUnit chronoUnit;
+        switch (unit) {
+        case "s":
+            chronoUnit = ChronoUnit.SECONDS;
+            break;
+        case "h":
+            chronoUnit = ChronoUnit.HOURS;
+            break;
+        case "d":
+            chronoUnit = ChronoUnit.DAYS;
+            break;
+        case "w":
+            chronoUnit = ChronoUnit.DAYS;
+            amount = amount * 7;
+            break;
+        case "m":
+            if (minus) {
+                return now.minusMonths(amount);
+            } else {
+                return now.plusMonths(amount);
+            }
+        case "y":
+            if (minus) {
+                return now.minusYears(amount);
+            } else {
+                return now.plusYears(amount);
+            }
+        default:
+            throw new IllegalArgumentException("illegal time unit. Should be [s|h|d|w|m|y]: ");
+        }
+        if (minus) {
+            return now.minus(amount, chronoUnit);
+        } else {
+            return now.plus(amount, chronoUnit);
+        }
+    }
+
     public static Instant toInstant(LocalDate date) {
-        return Instant.parse(date.toString() + "T00:00:00Z");
+        return toInstant(LocalDateTime.of(date, LocalTime.MIDNIGHT));
     }
 
     public static Instant toInstant(LocalDateTime dateTime) {
