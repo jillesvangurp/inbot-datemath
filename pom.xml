@@ -28,19 +28,19 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>inbot-datemath</name>
-    <description>Utility class for parsing strings to java 8 Instant</description>
+    <description>Utility class for parsing textual descriptions of time to java 8 Instant</description>
     <url>https://github.com/inbot/inbot-datemath</url>
 
     <scm>
-        <url>git://git@github.com:jillesvangurp/jsonj.git</url>
-        <connection>scm:git:git@github.com:jillesvangurp/jsonj.git</connection>
-        <developerConnection>scm:git:git@github.com:jillesvangurp/jsonj.git</developerConnection>
+        <url>git://git@github.com:inbot/inbot-datemath.git</url>
+        <connection>scm:git:git@github.com:inbot/inbot-datemath.git</connection>
+        <developerConnection>scm:git:git@github.com:inbot/inbot-datemath.git</developerConnection>
     </scm>
 
     <licenses>
         <license>
             <name>MIT license</name>
-            <url>https://github.com/jillesvangurp/jsonj/blob/master/LICENSE</url>
+            <url>https://github.com/inbot/inbot-datemath/blob/master/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -72,22 +72,19 @@
         </repository>
     </distributionManagement>
 
-    <developers>
-        <developer>
-            <id>jillesvangurp</id>
-            <name>Jilles van Gurp</name>
-            <url>http://www.jillesvangurp.com</url>
-            <timezone>gmt+1</timezone>
-            <roles>
-                <role>Main Developer</role>
-            </roles>
-        </developer>
-    </developers>
-
     <organization>
         <name>Inbot</name>
         <url>http://inbot.io</url>
     </organization>
+    
+    <developers>
+        <developer>
+            <name>Jilles van Gurp</name>
+            <email>jilles@inbot.io</email>
+            <organization>Inbot</organization>
+            <organizationUrl>http://inbot.io</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
