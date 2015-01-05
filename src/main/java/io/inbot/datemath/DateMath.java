@@ -214,5 +214,4 @@ public class DateMath {
     public static Instant toInstant(LocalDateTime dateTime) {
         return dateTime.toInstant(ZoneOffset.UTC);
     }
-
 }
