@@ -61,7 +61,7 @@ public class DateMathTest {
     @Test(dataProvider="samples")
     public void shouldDoDateMath(String text, Instant expected) {
         // allow for a few milliseconds difference between now during parsing and calculation of expected
-        assertThat(differenceInMillis(DateMath.parse(text), expected)).isLessThan(100);
+        assertThat(differenceInMillis(DateMath.parse(text), expected)).isLessThan(500);
     }
 
     public void shouldHandleTimeZoneCorrectly() {
