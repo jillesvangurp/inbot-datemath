@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -51,6 +52,10 @@ public class DateMathTest {
                 {"100m",now.plusMonths(100).toInstant(ZoneOffset.UTC)},
                 {"  -  100  y  ",now.minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"100y",now.plusYears(100).toInstant(ZoneOffset.UTC)},
+                {"10:00",LocalDate.now().atTime(LocalTime.of(10, 00)).toInstant(ZoneOffset.UTC)},
+                {"10:00 -1d",LocalDate.now().atTime(LocalTime.of(10, 00)).toInstant(ZoneOffset.UTC).minus(1, ChronoUnit.DAYS)},
+                {"10:00 +1d",LocalDate.now().atTime(LocalTime.of(10, 00)).toInstant(ZoneOffset.UTC).plus(1, ChronoUnit.DAYS)},
+                {"2015-01-01",LocalDate.of(2015, 01, 01).atTime(LocalTime.MIDNIGHT).toInstant(ZoneOffset.UTC)},
                 {"yesterday+100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday - 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday + 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
