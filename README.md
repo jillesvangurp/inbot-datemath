@@ -10,15 +10,15 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
  - It is somewhat more flexible in interpreting different expressions.
  - It can optionally support timezones and interpret any expression in that timezone.
 
- # Install from maven cental
+# Install from maven cental
 
- ```xml
- <dependency>
+```xml
+<dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
   <version>1.0</version>
- </dependency>
- ```
+</dependency>
+```
 
  # License
 
