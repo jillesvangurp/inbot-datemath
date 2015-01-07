@@ -12,11 +12,11 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 
  # Install from maven cental
 
- ```
+ ```xml
  <dependency>
-   <groupId>io.inbot</groupId>
-   <artifactId>inbot-datemath</artifactId>
-   <version>1.0</version>
+  <groupId>io.inbot</groupId>
+  <artifactId>inbot-datemath</artifactId>
+  <version>1.0</version>
  </dependency>
  ```
 
