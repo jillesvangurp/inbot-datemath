@@ -20,11 +20,11 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 </dependency>
 ```
 
- # License
+# License
 
- This code is [licensed](https://github.com/Inbot/inbot-datemath/blob/master/LICENSE) under the MIT license.
+This code is [licensed](https://github.com/Inbot/inbot-datemath/blob/master/LICENSE) under the MIT license.
 
- # Examples
+# Examples
 
 Look at [DateMathTest](https://github.com/Inbot/inbot-datemath/blob/master/src/test/java/io/inbot/datemath/DateMathTest.java) for examples of expressions that are currently supported.
 
