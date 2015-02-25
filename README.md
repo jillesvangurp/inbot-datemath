@@ -9,6 +9,8 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
  - It is not specific to elasticsearch. Their implementation is internal to elasticsearch and kind of tricky to untangle from it.
  - It is somewhat more flexible in interpreting different expressions.
  - It can optionally support timezones and interpret any expression in that timezone.
+ - It has a now() function that you can statically influence with setCustomTime(String expression) and disableCustomTime(). This allows you to set an
+ expression such as "now-1y" as the custom time and makes DateMath.now() return something that is always exactly 1 year in the past. This feature is intended for testing and a drop in replacement for using Instant.now()
 
 # Install from maven cental
 
@@ -16,7 +18,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 </dependency>
 ```
 
