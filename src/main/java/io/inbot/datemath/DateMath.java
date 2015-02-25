@@ -22,8 +22,33 @@ public class DateMath {
     private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([s|h|d|w|m|y])");
     private static final Pattern SUM_PATTERN = Pattern.compile("(.+)\\s*([\\+-])\\s*(.+)");
 
+    private static String customTimeExpression=null;
+
+    /**
+     * Globally set a date math expression that will be used when you call formatIsoDateNow
+     * @param expression
+     */
+    public static void setCustomTime(String expression) {
+        customTimeExpression=expression;
+    }
+
+    public static void disableCustomTime() {
+        customTimeExpression=null;
+    }
+
+    /**
+     * @return now or the parsed Instant for whatever custom expression is configured
+     */
+    public static Instant now() {
+        if(customTimeExpression==null) {
+            return Instant.now();
+        } else {
+            return parse(customTimeExpression);
+        }
+    }
+
     public static String formatIsoDateNow() {
-        return formatIsoDate(Instant.now());
+        return formatIsoDate(now());
     }
 
     public static String formatIsoDate(LocalDate date) {

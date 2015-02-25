@@ -2,7 +2,6 @@ package io.inbot.datemath;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,7 +9,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -78,8 +76,12 @@ public class DateMathTest {
         return Math.abs(one.toEpochMilli()-two.toEpochMilli());
     }
 
-    public void shouldHandleWeekDays() {
-        LocalDate lastFriday = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
-        System.out.println(lastFriday);
+    public void shouldChangeNow() {
+        Instant now = DateMath.now();
+        DateMath.setCustomTime("now-1y");
+        Instant lastYear = DateMath.now();
+        assertThat(lastYear.isBefore(now));
+        DateMath.disableCustomTime();
+        assertThat(DateMath.now().isAfter(now));
     }
 }
