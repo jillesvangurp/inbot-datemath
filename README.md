@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/Inbot/inbot-datemath.svg)](https://travis-ci.org/Inbot/inbot-datemath)
-
 # Introduction
 
 Inbot-datemath allows you to parse expressions such as "now - 1w" into an Instant timestamp. This is useful when querying data indexed with UTC normalized timestamps
@@ -15,6 +13,8 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
  expression such as "now-1y" as the custom time and makes DateMath.now() return something that is always exactly 1 year in the past. This feature is intended for testing and a drop in replacement for using Instant.now()
 
 # Install from maven cental
+
+[![Build Status](https://travis-ci.org/Inbot/inbot-datemath.svg)](https://travis-ci.org/Inbot/inbot-datemath)
 
 ```xml
 <dependency>
