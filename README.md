@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Inbot/inbot-datemath.svg)](https://travis-ci.org/Inbot/inbot-datemath)
+
 # Introduction
 
 Inbot-datemath allows you to parse expressions such as "now - 1w" into an Instant timestamp. This is useful when querying data indexed with UTC normalized timestamps
