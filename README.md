@@ -20,7 +20,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
 </dependency>
 ```
 
@@ -38,5 +38,6 @@ We plan to support more complex and rich expressions over time. Pull requests we
 
 # Changelog
 
+ - 1.2 - support "distant past" and "distant future" expressions using Instant.MIN and Instant.MAX
  - 1.1 - now() method that acts as a drop in replacement for Instant.now() that can be influenced with two static methods so you can globally set the time in your tests.
  - 1.0 - Initial release
