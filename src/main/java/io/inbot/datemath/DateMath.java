@@ -127,6 +127,10 @@ public class DateMath {
         }
         LocalDateTime now=LocalDateTime.ofInstant(Instant.now(), zoneId);
         switch (text.replace('_', ' ').toLowerCase()) {
+        case "min":
+            return LocalDateTime.ofInstant(Instant.MIN, zoneId);
+        case "max":
+            return LocalDateTime.ofInstant(Instant.MAX, zoneId);
         case "distant past":
             return LocalDateTime.ofInstant(Instant.MIN, zoneId);
         case "distant future":
