@@ -22,6 +22,12 @@ public class DateMathTest {
 
     }
 
+    public void shouldRemoveMillisecondsIfPrecisionIsSeconds() {
+        LocalDateTime time = LocalDateTime.of(1984, 12, 1, 0, 0, 0, 123000000);
+	assertThat(DateMath.formatIsoDate(time,
+				DateMath.PRECISION.s)).isEqualTo("1984-12-01T00:00:00Z");
+    }
+
     public void shouldAllowSettingDefaultPrecision() {
         DateMath.setDefaultPrecision(DateMath.PRECISION.d);
         LocalDateTime time = LocalDateTime.of(1984, 12, 1, 4, 0, 0, 123000000);
