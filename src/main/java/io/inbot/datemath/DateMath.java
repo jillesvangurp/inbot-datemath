@@ -178,6 +178,8 @@ public class DateMath {
             return LocalDateTime.ofInstant(Instant.MIN, zoneId);
         case "distant future":
             return LocalDateTime.ofInstant(Instant.MAX, zoneId);
+        case "morning":
+            return parseRelativeTime("09:00", zoneId);
         case "midnight":
             return parseRelativeTime("00:00", zoneId);
         case "noon":
