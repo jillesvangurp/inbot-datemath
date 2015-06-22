@@ -19,10 +19,22 @@ import java.util.regex.Pattern;
  * java.time.Instant.
  */
 public class DateMath {
-    private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([s|h|d|w|m|y])");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([ms|s|h|d|w|m|y])");
     private static final Pattern SUM_PATTERN = Pattern.compile("(.+)\\s*([\\+-])\\s*(.+)");
 
+    public enum PRECISION {
+        ms,
+        s,
+        h,
+        d,
+        w,
+        m,
+        y
+    }
+
     private static String customTimeExpression=null;
+
+    private static PRECISION defaultPrecision = PRECISION.s;
 
     /**
      * Globally set a date math expression that will be used when you call formatIsoDateNow
@@ -36,6 +48,10 @@ public class DateMath {
         customTimeExpression=null;
     }
 
+    public static void setDefaultPrecision(PRECISION precision) {
+        defaultPrecision = precision;
+    }
+
     /**
      * @return now or the parsed Instant for whatever custom expression is configured
      */
@@ -46,30 +62,57 @@ public class DateMath {
             return parse(customTimeExpression);
         }
     }
-
     public static String formatIsoDateNow() {
-        return formatIsoDate(now());
+        return formatIsoDate(now(), null);
     }
 
     public static String formatIsoDate(LocalDate date) {
         LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0, 0);
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC));
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC), null);
     }
 
     public static String formatIsoDate(LocalDateTime time) {
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC));
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC), null);
     }
 
     public static String formatIsoDate(OffsetDateTime date) {
-        return formatIsoDate(date.toInstant());
+        return formatIsoDate(date.toInstant(), null);
     }
 
     public static String formatIsoDate(Instant date) {
-        return date.truncatedTo(ChronoUnit.SECONDS).toString();
+        return date.truncatedTo(getChronoUnit(defaultPrecision)).toString();
     }
 
     public static String formatIsoDate(long timeInMillisSinceEpoch) {
-        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch));
+        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch), null);
+    }
+
+    public static String formatIsoDateNow(PRECISION precision) {
+        return formatIsoDate(now(), precision);
+    }
+
+    public static String formatIsoDate(LocalDate date, PRECISION precision) {
+        LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0, 0);
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC), precision);
+    }
+
+    public static String formatIsoDate(LocalDateTime time, PRECISION precision) {
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC), precision);
+    }
+
+    public static String formatIsoDate(OffsetDateTime date, PRECISION precision) {
+        return formatIsoDate(date.toInstant(), precision);
+    }
+
+    public static String formatIsoDate(Instant date, PRECISION precision) {
+        if (precision == null) {
+            precision = defaultPrecision;
+        }
+        return date.truncatedTo(getChronoUnit(precision)).toString();
+    }
+
+    public static String formatIsoDate(long timeInMillisSinceEpoch, PRECISION precision) {
+        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch), precision);
     }
 
     private static Instant flexibleInstantParse(String text, ZoneId zoneId) throws DateTimeParseException {
@@ -205,6 +248,9 @@ public class DateMath {
     private static LocalDateTime adjust(LocalDateTime now, boolean minus, int amount, String unit) {
         ChronoUnit chronoUnit;
         switch (unit) {
+        case "ms":
+            chronoUnit = ChronoUnit.MILLIS;
+            break;
         case "s":
             chronoUnit = ChronoUnit.SECONDS;
             break;
@@ -231,13 +277,43 @@ public class DateMath {
                 return now.plusYears(amount);
             }
         default:
-            throw new IllegalArgumentException("illegal time unit. Should be [s|h|d|w|m|y]: ");
+            throw new IllegalArgumentException("illegal time unit. Should be [ms|s|h|d|w|m|y]: ");
         }
         if (minus) {
             return now.minus(amount, chronoUnit);
         } else {
             return now.plus(amount, chronoUnit);
         }
+    }
+
+    private static ChronoUnit getChronoUnit(PRECISION precision) {
+        ChronoUnit chronoUnit;
+        switch(precision) {
+            case ms:
+                chronoUnit = ChronoUnit.MILLIS;
+                break;
+            case s:
+                chronoUnit = ChronoUnit.SECONDS;
+                break;
+            case h:
+                chronoUnit = ChronoUnit.HOURS;
+                break;
+            case d:
+                chronoUnit = ChronoUnit.DAYS;
+                break;
+            case w:
+                chronoUnit = ChronoUnit.WEEKS;
+                break;
+            case m:
+                chronoUnit = ChronoUnit.MONTHS;
+                break;
+            case y:
+                chronoUnit = ChronoUnit.YEARS;
+                break;
+            default:
+                throw new IllegalArgumentException("illegal time unit. Should be [ms|s|h|d|w|m|y]: ");
+        }
+        return chronoUnit;
     }
 
     public static Instant toInstant(LocalDate date) {
