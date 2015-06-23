@@ -20,7 +20,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.3</version>
+  <version>1.4</version>
 </dependency>
 ```
 
@@ -38,6 +38,7 @@ We plan to support more complex and rich expressions over time. Pull requests we
 
 # Changelog
 
+ - 1.4 - Reimplement min and max to not depend on Instant.MIN or MAX since those dates are so far away that you get all sort of weird long overflows and other exceptions. Now returns LocalDateTime.of(0,1,1,0,0).toInstant(zoneId) or LocalDateTime.of(10000,1,1,0,0).toInstant(zoneId). ZoneId defaults to UTC unless you use a custom zoneId on the parse method.
  - 1.3 - support output with ms precision. Allows for a generic global precision to truncate dates.
  - 1.2 - support "min", "max", "distant past", and "distant future" expressions using Instant.MIN and Instant.MAX
  - 1.1 - now() method that acts as a drop in replacement for Instant.now() that can be influenced with two static methods so you can globally set the time in your tests.
