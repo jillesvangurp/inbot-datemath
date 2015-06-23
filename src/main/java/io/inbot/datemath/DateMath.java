@@ -171,9 +171,9 @@ public class DateMath {
         LocalDateTime now=LocalDateTime.ofInstant(Instant.now(), zoneId);
         switch (text.replace('_', ' ').toLowerCase()) {
         case "min":
-            return LocalDateTime.ofInstant(Instant.MIN, zoneId);
+            return LocalDateTime.of(0, 01, 01, 0, 0);
         case "max":
-            return LocalDateTime.ofInstant(Instant.MAX, zoneId);
+            return LocalDateTime.of(10000, 01, 01, 0, 0);
         case "distant past":
             return LocalDateTime.ofInstant(Instant.MIN, zoneId);
         case "distant future":
