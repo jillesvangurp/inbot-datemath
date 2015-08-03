@@ -11,6 +11,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,7 +170,7 @@ public class DateMath {
             zoneId=ZoneOffset.UTC;
         }
         LocalDateTime now=LocalDateTime.ofInstant(Instant.now(), zoneId);
-        switch (text.replace('_', ' ').toLowerCase()) {
+        switch (text.replace('_', ' ').toLowerCase(Locale.ENGLISH)) {
         case "min":
             return LocalDateTime.of(0, 01, 01, 0, 0);
         case "max":
