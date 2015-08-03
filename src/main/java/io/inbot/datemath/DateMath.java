@@ -8,6 +8,8 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -23,97 +25,52 @@ public class DateMath {
     private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([ms|s|h|d|w|m|y])");
     private static final Pattern SUM_PATTERN = Pattern.compile("(.+)\\s*([\\+-])\\s*(.+)");
 
-    public enum PRECISION {
-        ms,
-        s,
-        h,
-        d,
-        w,
-        m,
-        y
-    }
-
-    private static String customTimeExpression=null;
-
-    private static PRECISION defaultPrecision = PRECISION.s;
-
     /**
-     * Globally set a date math expression that will be used when you call formatIsoDateNow
-     * @param expression
+     * Variant of DateTimeFormatter.ISO_INSTANT that always adds 3 fractionals for the milliseconds instead of 0, 3, 6, or 9.
      */
-    public static void setCustomTime(String expression) {
-        customTimeExpression=expression;
-    }
-
-    public static void disableCustomTime() {
-        customTimeExpression=null;
-    }
-
-    public static void setDefaultPrecision(PRECISION precision) {
-        defaultPrecision = precision;
-    }
+    private static final DateTimeFormatter CONSISTENT_ISO_INSTANT=new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendInstant(3)
+            .toFormatter();
 
     /**
      * @return now or the parsed Instant for whatever custom expression is configured
      */
     public static Instant now() {
-        if(customTimeExpression==null) {
-            return Instant.now();
-        } else {
-            return parse(customTimeExpression);
-        }
+        return Instant.now();
     }
+
+    public static String formatIsoDate(OffsetDateTime date) {
+        return formatIsoDate(date.toInstant());
+    }
+
     public static String formatIsoDateNow() {
-        return formatIsoDate(now(), null);
+        return formatIsoDate(now());
     }
 
     public static String formatIsoDate(LocalDate date) {
         LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0, 0);
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC), null);
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC));
     }
 
     public static String formatIsoDate(LocalDateTime time) {
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC), null);
+        return formatIsoDate(time.toInstant(ZoneOffset.UTC));
     }
 
-    public static String formatIsoDate(OffsetDateTime date) {
-        return formatIsoDate(date.toInstant(), null);
-    }
-
+    /**
+     * Use this instead of Instant.toString() to ensure you always end up with the same pattern instead of 'smartly'
+     * loosing fractionals depending on what time it is.
+     *
+     * @param date
+     *            an instant
+     * @return iso instant of the form "1974-10-20T00:00:00.000Z" with 3 fractionals, always.
+     */
     public static String formatIsoDate(Instant date) {
-        return date.truncatedTo(getChronoUnit(defaultPrecision)).toString();
+        return CONSISTENT_ISO_INSTANT.format(date);
     }
 
     public static String formatIsoDate(long timeInMillisSinceEpoch) {
-        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch), null);
-    }
-
-    public static String formatIsoDateNow(PRECISION precision) {
-        return formatIsoDate(now(), precision);
-    }
-
-    public static String formatIsoDate(LocalDate date, PRECISION precision) {
-        LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0, 0);
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC), precision);
-    }
-
-    public static String formatIsoDate(LocalDateTime time, PRECISION precision) {
-        return formatIsoDate(time.toInstant(ZoneOffset.UTC), precision);
-    }
-
-    public static String formatIsoDate(OffsetDateTime date, PRECISION precision) {
-        return formatIsoDate(date.toInstant(), precision);
-    }
-
-    public static String formatIsoDate(Instant date, PRECISION precision) {
-        if (precision == null) {
-            precision = defaultPrecision;
-        }
-        return date.truncatedTo(getChronoUnit(precision)).toString();
-    }
-
-    public static String formatIsoDate(long timeInMillisSinceEpoch, PRECISION precision) {
-        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch), precision);
+        return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch));
     }
 
     private static Instant flexibleInstantParse(String text, ZoneId zoneId) throws DateTimeParseException {
@@ -287,36 +244,6 @@ public class DateMath {
         } else {
             return now.plus(amount, chronoUnit);
         }
-    }
-
-    private static ChronoUnit getChronoUnit(PRECISION precision) {
-        ChronoUnit chronoUnit;
-        switch(precision) {
-            case ms:
-                chronoUnit = ChronoUnit.MILLIS;
-                break;
-            case s:
-                chronoUnit = ChronoUnit.SECONDS;
-                break;
-            case h:
-                chronoUnit = ChronoUnit.HOURS;
-                break;
-            case d:
-                chronoUnit = ChronoUnit.DAYS;
-                break;
-            case w:
-                chronoUnit = ChronoUnit.WEEKS;
-                break;
-            case m:
-                chronoUnit = ChronoUnit.MONTHS;
-                break;
-            case y:
-                chronoUnit = ChronoUnit.YEARS;
-                break;
-            default:
-                throw new IllegalArgumentException("illegal time unit. Should be [ms|s|h|d|w|m|y]: ");
-        }
-        return chronoUnit;
     }
 
     public static Instant toInstant(LocalDate date) {

@@ -15,33 +15,14 @@ import org.testng.annotations.Test;
 @Test
 public class DateMathTest {
 
-    public void shouldSupportMilliSecondPrecision() {
-        LocalDateTime time = LocalDateTime.of(1984, 12, 1, 0, 0, 0, 123000000);
-        assertThat(DateMath.formatIsoDate(time,
-                        DateMath.PRECISION.ms)).isEqualTo("1984-12-01T00:00:00.123Z");
-
-    }
-
-    public void shouldRemoveMillisecondsIfPrecisionIsSeconds() {
-        LocalDateTime time = LocalDateTime.of(1984, 12, 1, 0, 0, 0, 123000000);
-	assertThat(DateMath.formatIsoDate(time,
-				DateMath.PRECISION.s)).isEqualTo("1984-12-01T00:00:00Z");
-    }
-
-    public void shouldAllowSettingDefaultPrecision() {
-        DateMath.setDefaultPrecision(DateMath.PRECISION.d);
-        LocalDateTime time = LocalDateTime.of(1984, 12, 1, 4, 0, 0, 123000000);
-        assertThat(DateMath.formatIsoDate(time
-                                         )).isEqualTo("1984-12-01T00:00:00Z");
-    }
-
     public void shouldFormatLocalDate() {
-        assertThat(DateMath.formatIsoDate(LocalDate.of(1974, 10, 20))).isEqualTo("1974-10-20T00:00:00Z");
+        String isoDate = DateMath.formatIsoDate(LocalDate.of(1974, 10, 20));
+        assertThat(isoDate).isEqualTo("1974-10-20T00:00:00.000Z");
     }
 
     public void shouldFormatLocalDateTime() {
         LocalDateTime time = LocalDateTime.of(1984, 12, 1, 0, 0, 0);
-        assertThat(DateMath.formatIsoDate(time)).isEqualTo("1984-12-01T00:00:00Z");
+        assertThat(DateMath.formatIsoDate(time)).isEqualTo("1984-12-01T00:00:00.000Z");
     }
 
     public void shouldParseIsoTimeStamp() {
@@ -96,14 +77,5 @@ public class DateMathTest {
 
     private long differenceInMillis(Instant one, Instant two) {
         return Math.abs(one.toEpochMilli()-two.toEpochMilli());
-    }
-
-    public void shouldChangeNow() {
-        Instant now = DateMath.now();
-        DateMath.setCustomTime("now-1y");
-        Instant lastYear = DateMath.now();
-        assertThat(lastYear.isBefore(now));
-        DateMath.disableCustomTime();
-        assertThat(DateMath.now().isAfter(now));
     }
 }
