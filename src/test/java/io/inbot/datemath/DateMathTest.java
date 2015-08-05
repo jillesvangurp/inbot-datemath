@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -73,6 +74,18 @@ public class DateMathTest {
     public void shouldHandleTimeZoneCorrectly() {
         Instant ts = DateMath.parse("16:30","EST");
         assertThat(ts.toString()).contains("21:30");
+    }
+
+    public void shouldRenderMonthYear() {
+        Instant ts = DateMath.parse("1974-10-20T00:00:00Z");
+        String rendered = DateMath.renderMonthYear(ts, ZoneOffset.UTC, Locale.ENGLISH);
+        assertThat(rendered).isEqualTo("October, 1974");
+    }
+
+    public void shouldRenderWeekYear() {
+        Instant ts = DateMath.parse("1974-10-20T00:00:00Z");
+        String rendered = DateMath.renderWeekYear(ts, ZoneOffset.UTC, Locale.ENGLISH);
+        assertThat(rendered).isEqualTo("42, 1974");
     }
 
     private long differenceInMillis(Instant one, Instant two) {

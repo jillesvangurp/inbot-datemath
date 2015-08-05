@@ -5,12 +5,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
@@ -252,5 +255,19 @@ public class DateMath {
 
     public static Instant toInstant(LocalDateTime dateTime) {
         return dateTime.toInstant(ZoneOffset.UTC);
+    }
+
+    public static String renderWeekYear(Instant t, ZoneId zoneId, Locale locale) {
+        LocalDateTime ld = LocalDateTime.ofInstant(t, zoneId);
+        int week = ld.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        int year = ld.get(ChronoField.YEAR);
+        return week + ", " + year;
+    }
+
+    public static String renderMonthYear(Instant t, ZoneId zoneId, Locale locale) {
+        LocalDateTime ld = LocalDateTime.ofInstant(t, zoneId);
+        int month = ld.get(ChronoField.MONTH_OF_YEAR);
+        int year = ld.get(ChronoField.YEAR);
+        return Month.of(month).getDisplayName(TextStyle.FULL, locale) + ", " + year;
     }
 }
