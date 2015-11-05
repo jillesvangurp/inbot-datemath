@@ -20,7 +20,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
 </dependency>
 ```
 
@@ -37,6 +37,7 @@ Look at [DateMathTest](https://github.com/Inbot/inbot-datemath/blob/master/src/t
 We plan to support more complex and rich expressions over time. Pull requests welcome of course.
 
 # Changelog
+ - 1.7 - change max date year to 9999 to avoid the + sign that Java's formatter adds before the year for the year 10000 and beyond
  - 1.6 - add convenience methods for turning instants into month + year or weeknr + year
  - 1.5
    - always format instants with 3 fractionals and don't rely on the annoying defaults for ISO_INSTANT
