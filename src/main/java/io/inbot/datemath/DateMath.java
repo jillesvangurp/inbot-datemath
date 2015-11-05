@@ -88,6 +88,7 @@ public class DateMath {
                 // try LocalDate
                 LocalDate localDate = LocalDate.parse(text);
                 LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+
                 return localDateTime.toInstant(ZoneOffset.of(zoneId.getId()));
             } catch (DateTimeParseException e1) {
                 // try LocalTime
@@ -134,7 +135,7 @@ public class DateMath {
         case "min":
             return LocalDateTime.of(0, 01, 01, 0, 0);
         case "max":
-            return LocalDateTime.of(10000, 01, 01, 0, 0);
+            return LocalDateTime.of(9999, 01, 01, 0, 0);
         case "distant past":
             return LocalDateTime.ofInstant(Instant.MIN, zoneId);
         case "distant future":

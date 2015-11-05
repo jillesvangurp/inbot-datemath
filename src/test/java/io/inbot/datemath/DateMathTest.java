@@ -61,7 +61,7 @@ public class DateMathTest {
                 {"yesterday + 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday\t-\t100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"min",LocalDateTime.of(0,1,1,0,0).toInstant(ZoneOffset.UTC)},
-                {"max",LocalDateTime.of(10000,1,1,0,0).toInstant(ZoneOffset.UTC)}
+                {"max",LocalDateTime.of(9999,1,1,0,0).toInstant(ZoneOffset.UTC)}
         };
     }
 
@@ -90,5 +90,12 @@ public class DateMathTest {
 
     private long differenceInMillis(Instant one, Instant two) {
         return Math.abs(one.toEpochMilli()-two.toEpochMilli());
+    }
+
+    public void shouldNotFuckUpDates() {
+        Instant now = DateMath.now();
+        String formatted = DateMath.formatIsoDate(now);
+        Instant parsed = DateMath.parse(formatted);
+        assertThat(parsed.toEpochMilli()).isEqualTo(now.toEpochMilli());
     }
 }
