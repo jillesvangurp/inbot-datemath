@@ -36,6 +36,15 @@ public class DateMath {
             .appendInstant(3)
             .toFormatter();
 
+    private static final DateTimeFormatter SIMPLE_ISO_INSTANT=new DateTimeFormatterBuilder()
+            .appendValue(ChronoField.YEAR, 4)
+            .appendValue(ChronoField.MONTH_OF_YEAR, 2)
+            .appendValue(ChronoField.DAY_OF_MONTH, 2)
+            .appendValue(ChronoField.HOUR_OF_DAY, 2)
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+            .toFormatter();
+
     /**
      * @return now or the parsed Instant for whatever custom expression is configured
      */
@@ -56,6 +65,10 @@ public class DateMath {
         return formatIsoDate(time.toInstant(ZoneOffset.UTC));
     }
 
+    public static String formatSimpleIsoTimestamp(Instant instant) {
+        return SIMPLE_ISO_INSTANT.format(instant.atZone(ZoneOffset.UTC));
+    }
+
     public static String formatIsoDate(LocalDateTime time) {
         return formatIsoDate(time.toInstant(ZoneOffset.UTC));
     }
@@ -69,7 +82,7 @@ public class DateMath {
      * @return iso instant of the form "1974-10-20T00:00:00.000Z" with 3 fractionals, always.
      */
     public static String formatIsoDate(Instant date) {
-        return CONSISTENT_ISO_INSTANT.format(date);
+        return CONSISTENT_ISO_INSTANT.format(date.atZone(ZoneOffset.UTC));
     }
 
     public static String formatIsoDate(long timeInMillisSinceEpoch) {

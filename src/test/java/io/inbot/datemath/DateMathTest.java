@@ -21,6 +21,11 @@ public class DateMathTest {
         assertThat(isoDate).isEqualTo("1974-10-20T00:00:00.000Z");
     }
 
+    public void shouldFormatSimpleTimestamp() {
+        assertThat(DateMath.formatIsoDate(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00.000Z");
+        assertThat(DateMath.formatSimpleIsoTimestamp(DateMath.parse("1974-10-20"))).isEqualTo("19741020000000");
+    }
+
     public void shouldFormatLocalDateTime() {
         LocalDateTime time = LocalDateTime.of(1984, 12, 1, 0, 0, 0);
         assertThat(DateMath.formatIsoDate(time)).isEqualTo("1984-12-01T00:00:00.000Z");
