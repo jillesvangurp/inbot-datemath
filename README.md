@@ -20,7 +20,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.8</version>
+  <version>1.9</version>
 </dependency>
 ```
 
@@ -37,6 +37,8 @@ Look at [DateMathTest](https://github.com/Inbot/inbot-datemath/blob/master/src/t
 We plan to support more complex and rich expressions over time. Pull requests welcome of course.
 
 # Changelog
+ - 1.9
+   - add iso timestamp format method without ms precision
  - 1.8
    - Explicitly render iso timestamps in UTC
    - Add simple formatter tha supports YYYYMMDDHHMMSS for use in things like filenames
