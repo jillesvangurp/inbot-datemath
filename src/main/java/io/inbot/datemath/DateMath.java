@@ -36,6 +36,12 @@ public class DateMath {
             .appendInstant(3)
             .toFormatter();
 
+    private static final DateTimeFormatter CONSISTENT_ISO_INSTANT_NOMS=new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendInstant(0)
+            .toFormatter();
+
+
     private static final DateTimeFormatter SIMPLE_ISO_INSTANT=new DateTimeFormatterBuilder()
             .appendValue(ChronoField.YEAR, 4)
             .appendValue(ChronoField.MONTH_OF_YEAR, 2)
@@ -83,6 +89,10 @@ public class DateMath {
      */
     public static String formatIsoDate(Instant date) {
         return CONSISTENT_ISO_INSTANT.format(date.atZone(ZoneOffset.UTC));
+    }
+
+    public static String formatIsoDateNoMs(Instant date) {
+        return CONSISTENT_ISO_INSTANT_NOMS.format(date.atZone(ZoneOffset.UTC));
     }
 
     public static String formatIsoDate(long timeInMillisSinceEpoch) {
@@ -150,7 +160,7 @@ public class DateMath {
         case "max":
             return LocalDateTime.of(9999, 01, 01, 0, 0);
         case "distant past":
-            return LocalDateTime.ofInstant(Instant.MIN, zoneId);
+            return LocalDateTime.ofInstant(Instant.EPOCH, zoneId);
         case "distant future":
             return LocalDateTime.ofInstant(Instant.MAX, zoneId);
         case "morning":

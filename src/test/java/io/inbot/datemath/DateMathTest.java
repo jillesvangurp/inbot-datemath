@@ -23,6 +23,7 @@ public class DateMathTest {
 
     public void shouldFormatSimpleTimestamp() {
         assertThat(DateMath.formatIsoDate(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00.000Z");
+        assertThat(DateMath.formatIsoDateNoMs(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00Z");
         assertThat(DateMath.formatSimpleIsoTimestamp(DateMath.parse("1974-10-20"))).isEqualTo("19741020000000");
     }
 
