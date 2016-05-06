@@ -21,6 +21,14 @@ public class DateMathTest {
         assertThat(isoDate).isEqualTo("1974-10-20T00:00:00.000Z");
     }
 
+    public void shouldBeValid() {
+        assertThat(DateMath.isValid("now-1m")).isTrue();
+    }
+
+    public void shouldBeInValid() {
+        assertThat(DateMath.isValid("xxx")).isFalse();
+    }
+
     public void shouldFormatSimpleTimestamp() {
         assertThat(DateMath.formatIsoDate(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00.000Z");
         assertThat(DateMath.formatIsoDateNoMs(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00Z");
