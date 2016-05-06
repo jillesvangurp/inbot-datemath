@@ -123,7 +123,7 @@ public class DateMath {
         }
     }
 
-    public boolean isValid(String text) {
+    public static boolean isValid(String text) {
         try {
             parse(text);
             return true;
