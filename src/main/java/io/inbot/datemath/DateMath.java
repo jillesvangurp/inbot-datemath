@@ -123,6 +123,15 @@ public class DateMath {
         }
     }
 
+    public boolean isValid(String text) {
+        try {
+            parse(text);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     /**
      * @param text
      * @return Instant; any relative expressions are interpreted to be in the UTC timezone.
