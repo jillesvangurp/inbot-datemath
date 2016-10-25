@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -33,6 +34,28 @@ public class DateMathTest {
         assertThat(DateMath.formatIsoDate(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00.000Z");
         assertThat(DateMath.formatIsoDateNoMs(DateMath.parse("1974-10-20"))).isEqualTo("1974-10-20T00:00:00Z");
         assertThat(DateMath.formatSimpleIsoTimestamp(DateMath.parse("1974-10-20"))).isEqualTo("19741020000000");
+    }
+
+    @DataProvider
+    Object[][] yearMonthPatterns() {
+        return new Object[][] {
+            {"2014",true},
+            {"2014-05",true},
+            {"2014/02",true},
+            {"201402",false},
+            {"14-02",false}
+        };
+    }
+
+    @Test(dataProvider="yearMonthPatterns")
+    public void shouldMatchYearMonthPattern(String input, boolean expectMatch) {
+        Matcher matcher = DateMath.YEAR_MONTH_PATTERN.matcher(input);
+        assertThat(matcher.matches()).isEqualTo(expectMatch);
+    }
+
+    public void shouldParseYearMonthPattern() {
+        assertThat(DateMath.formatIsoDate(DateMath.parse("2014-02"))).isEqualTo("2014-02-01T00:00:00.000Z");
+        assertThat(DateMath.formatIsoDate(DateMath.parse("2014"))).isEqualTo("2014-01-01T00:00:00.000Z");
     }
 
     public void shouldFormatLocalDateTime() {

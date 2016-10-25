@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 public class DateMath {
     private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([ms|s|h|d|w|m|y])");
     private static final Pattern SUM_PATTERN = Pattern.compile("(.+)\\s*([\\+-])\\s*(.+)");
+    static final Pattern YEAR_MONTH_PATTERN = Pattern.compile("([0-9][0-9][0-9][0-9])([^0-9]([0-9][0-9]))?");
 
     /**
      * Variant of DateTimeFormatter.ISO_INSTANT that always adds 3 fractionals for the milliseconds instead of 0, 3, 6, or 9.
@@ -99,13 +100,14 @@ public class DateMath {
         return formatIsoDate(Instant.ofEpochMilli(timeInMillisSinceEpoch));
     }
 
+    private static final ZoneId UTC = ZoneId.of("Z");
     private static Instant flexibleInstantParse(String text, ZoneId zoneId) throws DateTimeParseException {
         try {
             return Instant.parse(text);
         } catch (DateTimeParseException e) {
 
             if(zoneId == null) {
-                zoneId=ZoneId.of("Z");
+                zoneId=UTC;
             }
             try {
                 // try LocalDate
@@ -145,6 +147,26 @@ public class DateMath {
         return parse(text, zone);
     }
 
+    private static Instant parseYearMonth(String text, ZoneId zoneId) {
+        Matcher matcher = YEAR_MONTH_PATTERN.matcher(text);
+        if(matcher.matches()) {
+            String year = matcher.group(1);
+            String month = matcher.group(3);
+            int yearInt = Integer.valueOf(year);
+            int monthInt = 1;
+            if(month!=null) {
+                monthInt=Integer.valueOf(month);
+            }
+            int day=1;
+
+            LocalDate localDate = LocalDate.of(yearInt, monthInt, day);
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+            return localDateTime.toInstant(ZoneOffset.of(zoneId.getId()));
+        }
+
+        return null;
+    }
+
     private static Instant parse(String text, ZoneId zone) {
         if (text == null) {
             throw new IllegalArgumentException("cannot parse empty string");
@@ -154,7 +176,12 @@ public class DateMath {
         try {
             return flexibleInstantParse(text, zone);
         } catch (DateTimeParseException e) {
-            return toInstant(parseRelativeTime(text, zone));
+            Instant ym = parseYearMonth(text,zone);
+            if(ym!=null) {
+                return ym;
+            } else {
+                return toInstant(parseRelativeTime(text, zone));
+            }
         }
     }
 
@@ -170,7 +197,7 @@ public class DateMath {
             return LocalDateTime.of(9999, 01, 01, 0, 0);
         case "distant past":
             return LocalDateTime.ofInstant(Instant.EPOCH, zoneId);
-        case "distant future":
+        case "distant future": // FIXME issues with year with more than 4 digits aka. the year 10K problem.
             return LocalDateTime.ofInstant(Instant.MAX, zoneId);
         case "morning":
             return parseRelativeTime("09:00", zoneId);
