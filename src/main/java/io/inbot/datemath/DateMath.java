@@ -129,7 +129,7 @@ public class DateMath {
         try {
             parse(text);
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return false;
         }
     }
