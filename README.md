@@ -18,7 +18,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
 <dependency>
   <groupId>io.inbot</groupId>
   <artifactId>inbot-datemath</artifactId>
-  <version>1.12</version>
+  <version>1.13</version>
 </dependency>
 ```
 
@@ -35,6 +35,8 @@ Look at [DateMathTest](https://github.com/Inbot/inbot-datemath/blob/master/src/t
 We plan to support more complex and rich expressions over time. Pull requests welcome of course.
 
 # Changelog
+ - 1.13
+   - Fix issue with isValid
  - 1.12
    - add parser support for yyyy-mm and yyyy timestamps
  - 1.11
