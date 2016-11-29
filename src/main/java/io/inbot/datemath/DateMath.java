@@ -25,6 +25,34 @@ import java.util.regex.Pattern;
  * java.time.Instant.
  */
 public class DateMath {
+
+    /**
+     * 1st of January 1970 at 00:00 UTC
+     * if you are going to use a min date, this is a safe default unless you want to deal with negative epoch millis/seconds
+     */
+    public static final Instant AT_EPOCH=Instant.ofEpochMilli(0);
+
+    /**
+     * 1st of January, 0 AD at 00:00 UTC
+     */
+    public static final Instant AT_0AD=toInstant(LocalDateTime.of(0, 1, 1, 0, 0));
+    /**
+     * 1st of January, 2000 at 00:00 UTC
+     */
+    public static final Instant AT_Y2K=toInstant(LocalDateTime.of(2000, 1, 1, 0, 0));
+    /**
+     * The latest time that can be represented in Unix's signed 32-bit integer time format is 03:14:07 UTC on Tuesday, 19 January 2038 (2,147,483,647 seconds after 1 January 1970)
+     *
+     * https://en.wikipedia.org/wiki/Year_2038_problem
+     */
+    public static final Instant AT_Y2K38=Instant.ofEpochSecond(2_147_483_647);
+    // anything after that will have > 4 digits for year; not likely to end well with date formatting
+    /**
+     * 31st of December, 9999 at 00:00 UTC, gives you some wiggle room to adjust to later timezones without getting 5 digits in the year.
+     */
+    public static final Instant AT_Y10K=toInstant(LocalDateTime.of(9999, 12, 31, 0, 0));
+
+
     private static final Pattern DURATION_PATTERN = Pattern.compile("-?\\s*([0-9]+)\\s*([ms|s|h|d|w|m|y])");
     private static final Pattern SUM_PATTERN = Pattern.compile("(.+)\\s*([\\+-])\\s*(.+)");
     static final Pattern YEAR_MONTH_PATTERN = Pattern.compile("([0-9][0-9][0-9][0-9])([^0-9]([0-9][0-9]))?");
@@ -194,11 +222,11 @@ public class DateMath {
         case "min":
             return LocalDateTime.of(0, 01, 01, 0, 0);
         case "max":
-            return LocalDateTime.of(9999, 01, 01, 0, 0);
+            return LocalDateTime.of(9999, 12, 31, 0, 0);
         case "distant past":
             return LocalDateTime.ofInstant(Instant.EPOCH, zoneId);
-        case "distant future": // FIXME issues with year with more than 4 digits aka. the year 10K problem.
-            return LocalDateTime.ofInstant(Instant.MAX, zoneId);
+        case "distant future":
+            return LocalDateTime.of(9999, 12, 31, 0, 0);
         case "morning":
             return parseRelativeTime("09:00", zoneId);
         case "midnight":

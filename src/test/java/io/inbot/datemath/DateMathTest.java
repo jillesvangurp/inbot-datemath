@@ -22,6 +22,27 @@ public class DateMathTest {
         assertThat(isoDate).isEqualTo("1974-10-20T00:00:00.000Z");
     }
 
+    @Test(expectedExceptions=IllegalArgumentException.class)
+    public void shouldNotParseDateAfterY10K() {
+        DateMath.parse("10000-01-01");
+    }
+
+    public void shouldHandleY2K38() {
+        Instant instant = DateMath.AT_Y2K38.plus(10,ChronoUnit.DAYS);
+        assertThat(DateMath.parse(DateMath.formatIsoDate(instant))).isEqualTo(instant);
+    }
+
+    public void shouldHandle0AD() {
+        Instant instant = DateMath.AT_0AD;
+        assertThat(DateMath.parse(DateMath.formatIsoDate(instant))).isEqualTo(instant);
+    }
+
+    public void shouldHandlePrehistoric() {
+        Instant instant = DateMath.AT_0AD.minus(1000,ChronoUnit.DAYS);
+        System.err.println(DateMath.formatIsoDate(instant));
+        assertThat(DateMath.parse(DateMath.formatIsoDate(instant))).isEqualTo(instant);
+    }
+
     public void shouldBeValid() {
         assertThat(DateMath.isValid("now-1m")).isTrue();
     }
@@ -98,7 +119,7 @@ public class DateMathTest {
                 {"yesterday + 100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).plusYears(100).toInstant(ZoneOffset.UTC)},
                 {"yesterday\t-\t100y",now.minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS).minusYears(100).toInstant(ZoneOffset.UTC)},
                 {"min",LocalDateTime.of(0,1,1,0,0).toInstant(ZoneOffset.UTC)},
-                {"max",LocalDateTime.of(9999,1,1,0,0).toInstant(ZoneOffset.UTC)}
+                {"max",LocalDateTime.of(9999,12,31,0,0).toInstant(ZoneOffset.UTC)}
         };
     }
 
