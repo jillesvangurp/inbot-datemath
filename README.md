@@ -8,7 +8,7 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
  - It is not specific to elasticsearch. Their implementation is internal to elasticsearch and kind of tricky to untangle from it.
  - It is somewhat more flexible in interpreting different expressions.
  - It can optionally support timezones and interpret any expression in that timezone.
- - It has a now() function that you can statically influence with setCustomTime(String expression) and disableCustomTime(). This allows you to set an expression such as "now-1y" as the custom time and makes DateMath.now() return something that is always exactly 1 year in the past. This feature is intended for testing and a drop in replacement for using Instant.now()
+ - It comes with a few handy constants for tricky dates that are useful for testing as well as coming up with more sane MIN and MAX than Java's Instant provides (hint you'll have trouble parsing and formatting those).
 
 # Install from maven cental
 
@@ -41,7 +41,7 @@ We plan to support more complex and rich expressions over time. Pull requests we
  - 1.13
    - Fix issue with isValid
  - 1.12
-   - add parser support for yyyy-mm and yyyy timestamps
+   - add parser support for partial yyyy-mm and yyyy timestamps
  - 1.11
    - add validate method so that users can easily validate date expressions
  - 1.9
