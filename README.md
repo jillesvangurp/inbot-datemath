@@ -10,6 +10,10 @@ This class was loosely inspired by the datemath functionality in elasticsearch t
  - It can optionally support timezones and interpret any expression in that timezone.
  - It comes with a few handy constants for tricky dates that are useful for testing as well as coming up with more sane MIN and MAX than Java's Instant provides (hint you'll have trouble parsing and formatting those).
 
+# Repository move to jillesvangurp
+
+Inbot the company for which I developed this library originally is no more. So, I forked the repository and put it under my own account. I will likely change the name at some point. Any future releases will be done from here.
+
 # Install from maven cental
 
 [![Build Status](https://travis-ci.org/Inbot/inbot-datemath.svg)](https://travis-ci.org/Inbot/inbot-datemath)
